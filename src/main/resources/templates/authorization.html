@@ -1,11 +1,11 @@
 <!DOCTYPE html >
-<html lang="en" xmlns:th = "http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Login</title>
     <link th:href="@{/css/login.css}" rel="stylesheet"
           type="text/css"/>
-    <link th:replace = "/footer :: footer_style">
-    <link th:replace = "/header :: header_style">
+    <link th:replace="/footer :: footer_style">
+    <link th:replace="/header :: header_style">
 </head>
 <body>
 <div th:replace="/header :: header"></div>
@@ -27,10 +27,27 @@
 
 <div class="wrapper fadeInDown">
     <div id="formContent">
-        <h2 id="signIn" class="active">Sign In</h2>
-        <h2 id="signUp" class="inactive underlineHover">Sign Up</h2>
-        <form id="form" action="/login" method="post">
-        </form>
+        <div class="authorization_headers">
+            <h2 id="signIn" class="active">Sign In</h2>
+            <h2 id="signUp" class="inactive underlineHover">Sign Up</h2>
+        </div>
+        <div class="form_composition">
+            <form id="form" action="/login" method="post">
+                <label for="login">
+                    <input type="text" id="login" class="fadeIn second" name="login" placeholder="login">
+                </label>
+                <p id="error_login" style="color: red"></p>
+                <label for="email">
+                    <input type="email" id="email" class="fadeIn third hidden" name="email" placeholder="email">
+                </label>
+                <p id="error_email" style="color: red"></p>
+                <label for="password">
+                    <input type="password" id="password" class="fadeIn fourth" name="password" placeholder="password">
+                </label>
+                <p id="error_password" style="color: red"></p>
+                <input type="submit" class="fadeIn fifth" value="Sign In">
+            </form>
+        </div>
         <div id="formFooter">
             <a class="underlineHover fadeIn fourth" id="forgot_password" href="#">Forgot Password?</a>
         </div>
