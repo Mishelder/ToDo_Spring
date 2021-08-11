@@ -4,8 +4,11 @@
     <title>Login</title>
     <link th:href="@{/css/login.css}" rel="stylesheet"
           type="text/css"/>
+    <link th:replace = "/footer :: footer_style">
+    <link th:replace = "/header :: header_style">
 </head>
 <body>
+<div th:replace="/header :: header"></div>
 <div class="hidden modal__window">
     <button class="close__modal">&times;</button>
     <div class="security__number hidden">
@@ -21,7 +24,7 @@
     <input type="submit" name="accept_email" class="accept_email" value="Send code">
 </div>
 <div class="hidden modal__background"></div>
-</div>
+
 <div class="wrapper fadeInDown">
     <div id="formContent">
         <h2 id="signIn" class="active">Sign In</h2>
@@ -33,5 +36,6 @@
         </div>
     </div>
 </div>
+<div th:replace="/footer :: footer"></div>
 </body>
 </html>
