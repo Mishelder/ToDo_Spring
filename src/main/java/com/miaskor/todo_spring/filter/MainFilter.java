@@ -10,13 +10,13 @@ import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.miaskor.todo_spring.util.URLs.*;
+import static com.miaskor.todo_spring.util.URLs.getAllFeasibleURL;
+import static com.miaskor.todo_spring.util.URLs.getAllPublicURL;
 
 @Component
 public class MainFilter extends HttpFilter {
@@ -26,7 +26,7 @@ public class MainFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-        req.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        /*req.setCharacterEncoding(StandardCharsets.UTF_8.name());
         res.setCharacterEncoding(StandardCharsets.UTF_8.name());
         var client = (Client) req.getSession().getAttribute("client");
         var cookies = req.getCookies();
@@ -40,7 +40,8 @@ public class MainFilter extends HttpFilter {
         } else {
             res.sendRedirect(req.getHeader("referer") == null
                     ? LOGIN :req.getHeader("referer"));
-        }
+        }*/
+        chain.doFilter(req,res);
     }
 
     private boolean findCookieLoggedIn(Cookie[] cookies) {
