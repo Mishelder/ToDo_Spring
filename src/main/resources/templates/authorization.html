@@ -45,7 +45,7 @@
                     <input type="password" id="password" class="fadeIn fourth" name="password" placeholder="password">
                 </label>
                 <p id="error_password" style="color: red"></p>
-                <input type="submit" class="fadeIn fifth" value="Sign In">
+                <input type="submit" id="sbm_btn" class="fadeIn fifth" value="Sign In">
             </form>
         </div>
         <div id="formFooter">
@@ -54,5 +54,6 @@
     </div>
 </div>
 <div th:replace="/footer :: footer"></div>
+<script th:src="@{/js/authorization.js}" ></script>
 </body>
 </html>
