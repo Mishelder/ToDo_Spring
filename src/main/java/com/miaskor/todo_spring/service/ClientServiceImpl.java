@@ -15,7 +15,7 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
 
     @Autowired
-    public ClientServiceImpl(ClientRepository clientRepository){
+    public ClientServiceImpl(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
 
@@ -50,5 +50,21 @@ public class ClientServiceImpl implements ClientService {
         if (clientById.isEmpty())
             throw new ClientIsNotExistException("Client with id = " + integer + " has not been deleted");
         clientRepository.deleteById(integer);
+    }
+
+    @Override
+    public Client findByLoginAndPassword(String login, String password) {
+        var clientByLogin = clientRepository.findClientByLoginAndPassword(login, password);
+        if (clientByLogin.isEmpty())
+            throw new ClientIsNotExistException("Client with login = " + login + " and password = " + password + " has not found");
+        return clientByLogin.get();
+    }
+
+    @Override
+    public Client findByLogin(String login) {
+        var clientByLogin = clientRepository.findClientByLogin(login);
+        if (clientByLogin.isEmpty())
+            throw new ClientIsNotExistException("Client with login = " + login  + " has not found");
+        return clientByLogin.get();
     }
 }

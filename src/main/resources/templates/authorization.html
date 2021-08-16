@@ -34,18 +34,16 @@
         <div class="form_composition">
             <form id="form" action="/login" method="post">
                 <label for="login">
-                    <input type="text" id="login" class="fadeIn second" name="login" placeholder="login">
+                    <input type="text" id="login" class="fadeIn first" name="login" placeholder="login" required>
                 </label>
-                <p id="error_login" style="color: red"></p>
                 <label for="email">
-                    <input type="email" id="email" class="fadeIn third hidden" name="email" placeholder="email">
+                    <input type="email" id="email" class="fadeIn first hidden" name="email" placeholder="email">
                 </label>
-                <p id="error_email" style="color: red"></p>
                 <label for="password">
-                    <input type="password" id="password" class="fadeIn fourth" name="password" placeholder="password">
+                    <input type="password" id="password" class="fadeIn second" name="password" placeholder="password" required minlength="8">
                 </label>
-                <p id="error_password" style="color: red"></p>
-                <input type="submit" id="sbm_btn" class="fadeIn fifth" value="Sign In">
+                <p id="error" style="color: red"></p>
+                <input type="submit" id="sbm_btn" class="fadeIn third" value="Sign In">
             </form>
         </div>
         <div id="formFooter">
