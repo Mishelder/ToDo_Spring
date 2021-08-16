@@ -1,5 +1,6 @@
 package com.miaskor.todo_spring.controller.rest;
 
+import com.miaskor.todo_spring.exception.TaskIsNotExistException;
 import com.miaskor.todo_spring.model.Task;
 import com.miaskor.todo_spring.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,10 @@ public class TaskController {
 
     @GetMapping("{id}")
     public Task getTaskById(@PathVariable Integer id){
-        return taskService.findById(id);
+        var byId = taskService.findById(id);
+        if(byId.isEmpty())
+            throw new TaskIsNotExistException("Task with id = " + id + " haven't found");
+        return byId.get();
     }
 
     @PutMapping("")

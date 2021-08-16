@@ -1,5 +1,6 @@
 package com.miaskor.todo_spring.controller.rest;
 
+import com.miaskor.todo_spring.exception.ClientIsNotExistException;
 import com.miaskor.todo_spring.model.Client;
 import com.miaskor.todo_spring.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,10 @@ public class ClientController {
 
     @GetMapping("{id}")
     public Client getClientById(@PathVariable Integer id){
-        return clientService.findById(id);
+        var byId = clientService.findById(id);
+        if(byId.isEmpty())
+            throw new ClientIsNotExistException("Client with id = " + id + " haven't found");
+        return byId.get();
     }
 
     @PostMapping("")
