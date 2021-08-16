@@ -1,12 +1,12 @@
 package com.miaskor.todo_spring.service;
 
-import com.miaskor.todo_spring.exception.ClientIsNotExistException;
 import com.miaskor.todo_spring.model.Client;
 import com.miaskor.todo_spring.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -27,11 +27,8 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Client findById(Integer integer) {
-        var clientById = clientRepository.findById(integer);
-        if (clientById.isEmpty())
-            throw new ClientIsNotExistException("Client with id = " + integer + " has not found");
-        return clientById.get();
+    public Optional<Client> findById(Integer integer) {
+        return clientRepository.findById(integer);
     }
 
     @Override
@@ -46,25 +43,21 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void deleteById(Integer integer) {
-        var clientById = clientRepository.findById(integer);
-        if (clientById.isEmpty())
-            throw new ClientIsNotExistException("Client with id = " + integer + " has not been deleted");
         clientRepository.deleteById(integer);
     }
 
     @Override
-    public Client findByLoginAndPassword(String login, String password) {
-        var clientByLogin = clientRepository.findClientByLoginAndPassword(login, password);
-        if (clientByLogin.isEmpty())
-            throw new ClientIsNotExistException("Client with login = " + login + " and password = " + password + " has not found");
-        return clientByLogin.get();
+    public Optional<Client> findByLoginAndPassword(String login, String password) {
+        return clientRepository.findClientByLoginAndPassword(login, password);
     }
 
     @Override
-    public Client findByLogin(String login) {
-        var clientByLogin = clientRepository.findClientByLogin(login);
-        if (clientByLogin.isEmpty())
-            throw new ClientIsNotExistException("Client with login = " + login  + " has not found");
-        return clientByLogin.get();
+    public Optional<Client> findByLogin(String login) {
+        return clientRepository.findByLogin(login);
+    }
+
+    @Override
+    public Optional<Client> findByEmail(String email) {
+        return clientRepository.findByEmail(email);
     }
 }
