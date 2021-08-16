@@ -83,15 +83,11 @@ form.addEventListener('submit', (e) => {
         body: JSON.stringify(data)
     }).then(response => response.json())
         .then(body => {
-        if(url === "/login") {
             if (body.hasOwnProperty("id")) {
                 document.location = "/todo";
             } else {
                 setErrorData(body);
             }
-        }else if(url === "/registration"){
-            //TODO
-        }
     }).catch(reason => error.textContent = "Something went wrong!");
 });
 
