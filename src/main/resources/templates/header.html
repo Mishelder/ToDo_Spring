@@ -9,9 +9,10 @@
     <div class="header-bar">
         <h1 class="logo">ToDo</h1>
         <ul class="slider-menu">
-            <li><a href="/todo" id="home_btn" class="links" th:if="${session.client != null}">Home</a></li>
-            <li>About</li>
-            <li><a href="/logout" id="logout_btn" class="links" th:if="${session.client != null}">Logout</a></li>
+            <li onclick="this.firstChild.click()" th:if="${session.client != null && session.about == null}"><a href="/todo" id="home_btn" class="links">Home</a></li>
+            <li onclick="this.firstChild.click()"><a href="/about" class="links">About</a></li>
+            <li onclick="this.firstChild.click()" th:if="${session.about != null}"><a onClick="history.go(-1)" class="links">Back</a></li>
+            <li onclick="this.firstChild.click()" th:if="${session.client != null && session.about == null}"><a href="/logout" id="logout_btn" class="links">Logout</a></li>
         </ul>
     </div>
 </div>

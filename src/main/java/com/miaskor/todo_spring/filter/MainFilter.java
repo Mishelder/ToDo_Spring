@@ -27,6 +27,11 @@ public class MainFilter extends HttpFilter {
         res.setCharacterEncoding(StandardCharsets.UTF_8.name());
         var client = (Client) req.getSession().getAttribute("client");
         var uri = req.getRequestURI();
+        if(uri.contains("about"))
+            req.getSession().setAttribute("about",true);
+        else
+            req.getSession().removeAttribute("about");
+
         if (PUBLIC_PAGES.stream().anyMatch(uri::startsWith)) {
             chain.doFilter(req, res);
         }else if(Objects.nonNull(client)){
