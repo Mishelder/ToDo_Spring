@@ -36,14 +36,16 @@ let moveableFrom = new Date(),
     moveableTo = new Date(),
     currentFrom = new Date(),
     currentTo = new Date();
-currentTo.addDays(RANGE_VALUE/2);
+currentTo.addDays(RANGE_VALUE / 2);
 changeCurrentRange(currentFrom, new Date(currentTo));
 changeMoveableRange(currentFrom, currentTo);
 
 const allTasks = {};
 
+//Server
+
 async function getTasks(from, to) {
-    return await fetch('/fetch', {
+    return await fetch('/task/range', {
         method: 'POST',
         headers: {
             'Content-type': 'application/json'
@@ -54,16 +56,16 @@ async function getTasks(from, to) {
 }
 
 function saveTask(date, inputElement, taskDiv) {
-    fetch('/save', {
+    fetch('/task/save', {
         method: 'POST',
         headers: {
             'Content-type': 'application/json'
         },
         body: JSON.stringify(
             {
-                'task': inputElement.value,
+                'taskName': inputElement.value,
                 'date': date,
-                'doneTask': inputElement.classList.contains('is_done') ? 'checked' : ''
+                'done': inputElement.classList.contains('is_done')
             }),
     }).then(response => response.text())
         .then(text => {
@@ -73,7 +75,6 @@ function saveTask(date, inputElement, taskDiv) {
             } else {
                 inputElement.value = parse.task;
             }
-
         }).then(() => {
         createAlternationDiv(taskDiv);
         createDivForTask(date);
@@ -81,36 +82,33 @@ function saveTask(date, inputElement, taskDiv) {
 }
 
 function deleteTask(id) {
-    fetch('/delete', {
-        method: 'POST',
-        headers: {
-            'Content-type': 'application/json'
-        },
-        body: JSON.stringify({'id': id}),
+    fetch(`/task/${id}`, {
+        method: 'DELETE'
     }).then();
 }
 
-function updateTask(id, value, done) {
-    fetch('/update', {
-        method: 'POST',
+function updateTask(id, value, done, date) {
+    fetch('/task/update', {
+        method: 'PUT',
         headers: {
             'Content-type': 'application/json'
         },
         body: JSON.stringify(
             {
                 'id': id,
-                'task': value,
-                'isDone': done
+                'taskName': value,
+                'done': done,
+                'date': date
             }),
     }).then();
 }
 
 moveLeft.addEventListener("click", () => {
     document.getElementById(currentTo.formatToDMY()).classList.add('hidden');
-    let oldToDoDiv = document.getElementById(currentFrom.formatToDMY());
+    const oldToDoDiv = document.getElementById(currentFrom.formatToDMY());
     currentFrom.subtractDays(1);
     currentTo.subtractDays(1);
-    let newDate = document.getElementById(currentFrom.formatToDMY());
+    const newDate = document.getElementById(currentFrom.formatToDMY());
     if (newDate === null) {
         oldToDoDiv.before(createToDoDay(currentFrom).divElement);
         createTask(currentFrom.formatToDMY());
@@ -119,19 +117,19 @@ moveLeft.addEventListener("click", () => {
     }
     if (moveableFrom.getDate() === currentFrom.getDate()) {
         moveableFrom.subtractDays(1);
-        let to = new Date(moveableFrom);
+        const to = new Date(moveableFrom);
         moveableFrom.subtractDays(RANGE_VALUE / 2);
-        let from = new Date(moveableFrom);
-        getTasks(from.toDateString(), to.toDateString());
+        const from = new Date(moveableFrom);
+        getTasks(from.formatToDMY(), to.formatToDMY());
     }
 });
 
 moveRight.addEventListener("click", () => {
     document.getElementById(currentFrom.formatToDMY()).classList.add('hidden');
-    let oldToDoDiv = document.getElementById(currentTo.formatToDMY());
+    const oldToDoDiv = document.getElementById(currentTo.formatToDMY());
     currentFrom.addDays(1);
     currentTo.addDays(1);
-    let newDate = document.getElementById(currentTo.formatToDMY());
+    const newDate = document.getElementById(currentTo.formatToDMY());
     if (newDate === null) {
         oldToDoDiv.after(createToDoDay(currentTo).divElement);
         createTask(currentTo.formatToDMY());
@@ -140,17 +138,17 @@ moveRight.addEventListener("click", () => {
     }
     if (moveableTo.getDate() === currentTo.getDate()) {
         moveableTo.addDays(1);
-        let from = new Date(moveableTo);
+        const from = new Date(moveableTo);
         moveableTo.addDays(RANGE_VALUE / 2);
-        let to = new Date(moveableTo);
-        getTasks(from.toDateString(), to.toDateString());
+        const to = new Date(moveableTo);
+        getTasks(from.formatToDMY(), to.formatToDMY());
     }
 });
 
 
 function dateInRange(startDate, stopDate) {
-    let dateArray = new Array();
-    let currentDate = new Date(startDate);
+    const dateArray = [],
+        currentDate = new Date(startDate);
     while (currentDate <= stopDate) {
         dateArray.push(new Date(currentDate));
         currentDate.addDays(1);
@@ -159,7 +157,7 @@ function dateInRange(startDate, stopDate) {
 }
 
 function createToDoDay(date) {
-    let divToDoDay = new Div(date.formatToDMY(), 'to_do_day'),
+    const divToDoDay = new Div(date.formatToDMY(), 'to_do_day'),
         divTasks = new Div('', 'tasks'),
         divDate = new Div('', 'date'),
         labelDate = document.createElement("label");
@@ -173,7 +171,7 @@ function createToDoDay(date) {
 }
 
 function initDateRange(dateFrom, dateTo) {
-    let rangeOfDates = dateInRange(dateFrom, dateTo);
+    const rangeOfDates = dateInRange(dateFrom, dateTo);
     for (let item of rangeOfDates) {
         toDoListDiv.append(createToDoDay(item).divElement)
         createTask(item.formatToDMY());
@@ -182,7 +180,7 @@ function initDateRange(dateFrom, dateTo) {
 
 
 function createDivForExistTask(date, item) {
-    let tasksDiv = document.getElementById(date).getElementsByClassName('tasks')[0],
+    const tasksDiv = document.getElementById(date).getElementsByClassName('tasks')[0],
         taskDiv = new Div(item['id'], 'task'),
         taskValueDiv = new Div('', 'value_task'),
         task = new InputElement('text', '', item['taskName'], '', '', false, '');
@@ -200,7 +198,7 @@ function createDivForExistTask(date, item) {
 }
 
 function createAlternationDiv(taskDiv) {
-    let alternationDiv = new Div('', 'alternation_task', 'hidden'),
+    const alternationDiv = new Div('', 'alternation_task', 'hidden'),
         deleteImage = document.createElement('img'),
         alternateImage = document.createElement('img'),
         divForDeleteImage = new Div('', 'delete_image'),
@@ -208,14 +206,14 @@ function createAlternationDiv(taskDiv) {
     alternationDiv.renderAppend(taskDiv);
     divForDeleteImage.renderAppend(taskDiv);
     divForAlternateImage.renderAppend(taskDiv);
-    deleteImage.src = '/fileLoader?fileName=recycle&extension=png&folder=img';
-    alternateImage.src = '/fileLoader?fileName=pencil&extension=png&folder=img';
+    deleteImage.src = '../img/recycle.png';
+    alternateImage.src = '../img/pencil.png';
     divForDeleteImage.divElement.addEventListener('click', () => {
         taskDiv.remove();
         deleteTask(taskDiv.id);
     });
     divForAlternateImage.divElement.addEventListener('click', () => {
-        let value_task = taskDiv.getElementsByClassName('value_task')[0],
+        const value_task = taskDiv.getElementsByClassName('value_task')[0],
             input = value_task.getElementsByTagName('input')[0],
             divText = taskDiv.getElementsByClassName("pop_up_task")[0];
         if (divText !== undefined)
@@ -249,7 +247,8 @@ function createAlternationDiv(taskDiv) {
                         isMatchedValueForTextArea(input.value, taskDiv);
                     }
                 }
-                updateTask(taskDiv.id, input.value, input.classList.contains('is_done'));
+                const toDoDay = taskDiv.parentElement.parentElement;
+                updateTask(taskDiv.id, input.value, input.classList.contains('is_done'),toDoDay.id);
             }
         }
     });
@@ -263,13 +262,14 @@ function createAlternationDiv(taskDiv) {
 function changeDoneStatusOnClick(taskValueDiv, inputElement, taskDiv) {
     taskValueDiv.addEventListener('click', () => {
         if (inputElement.value.length !== 0) {
-            updateTask(taskDiv.id, inputElement.value, inputElement.classList.toggle('is_done'));
+            const toDoDay = taskDiv.parentElement.parentElement;
+            updateTask(taskDiv.id, inputElement.value, inputElement.classList.toggle('is_done'),toDoDay.id);
         }
     });
 }
 
 function createDivForTask(date) {
-    let tasksDiv = document.getElementById(date).getElementsByClassName('tasks')[0],
+    const tasksDiv = document.getElementById(date).getElementsByClassName('tasks')[0],
         taskDiv = new Div('', 'task'),
         taskValueDiv = new Div('', 'value_task'),
         task = new InputElement('text', '', '', '', '', false, '');
@@ -287,21 +287,19 @@ function createDivForTask(date) {
 
     function save() {
         if (task.inputElement.value.length !== 0) {
+            task.inputElement.onblur = () => {
+            };
             task.inputElement.disabled = true;
             saveTask(date, task.inputElement, taskDiv.divElement);
             task.inputElement.removeEventListener('keydown', saveWhenPressEnter);
-            task.inputElement.onblur = () => {
-            };
         }
     }
 
-    function saveWhenPressEnter() {
-        return (event) => {
-            if (event.key === "Enter") {
-                isMatchedValueForTextArea(task.inputElement.value, taskDiv.divElement);
-                save();
-            }
-        };
+    function saveWhenPressEnter(event) {
+        if (event.key === "Enter") {
+            isMatchedValueForTextArea(task.inputElement.value, taskDiv.divElement);
+            save();
+        }
     }
 }
 
@@ -368,14 +366,14 @@ calendar.addEventListener("change", (e) => {
         }
     }
     if (isNeedLoadTask) {
-        getTasks(tempCursorDateFrom.toDateString(), tempCursorDateTo.toDateString()).then(() => {
+        getTasks(tempCursorDateFrom.formatToDMY(), tempCursorDateTo.formatToDMY()).then(() => {
             generateToDoDays(rangeNewVisibleDates);
         });
     } else {
         generateToDoDays(rangeNewVisibleDates);
     }
 
-    function  generateToDoDays(rangeNewVisibleDates) {
+    function generateToDoDays(rangeNewVisibleDates) {
         let appendableElem = null;
         for (let date of rangeNewVisibleDates) {
             const existedDate = document.getElementById(date.formatToDMY());
@@ -383,12 +381,12 @@ calendar.addEventListener("change", (e) => {
                 if (appendableElem === null) {
                     appendableElem = createToDoDay(date).divElement;
                     let dates = [];
-                    for(let elem of allToDoDays)
+                    for (let elem of allToDoDays)
                         dates.push(elem.id);
-                    const indexDate =binarySearchDate(dates,date.formatToDMY());
-                    if(date>dates[indexDate]) {
+                    const indexDate = binarySearchDate(dates, date.formatToDMY());
+                    if (date > dates[indexDate]) {
                         document.getElementById(dates[indexDate]).after(appendableElem);
-                    }else{
+                    } else {
                         document.getElementById(dates[indexDate]).before(appendableElem);
                     }
                 } else {
@@ -407,26 +405,25 @@ calendar.addEventListener("change", (e) => {
 });
 
 
-
-function binarySearchDate(arrDates, date){
-    if(date>arrDates[arrDates.length-1])
+function binarySearchDate(arrDates, date) {
+    if (date > arrDates[arrDates.length - 1])
         return arrDates.length - 1;
-    if(date<arrDates[0])
+    if (date < arrDates[0])
         return 0;
     let begin = 0,
-        end = arrDates.length -1;
+        end = arrDates.length - 1;
 
     while (begin <= end) {
-        let middle =  Math.floor((begin + end) / 2) ;
+        let middle = Math.floor((begin + end) / 2);
         let midVal = arrDates[middle];
         if (date > midVal)
-            begin = middle+1;
+            begin = middle + 1;
         else if (date < midVal)
-            end = middle-1;
+            end = middle - 1;
         else
-            return  Math.floor(middle);
+            return Math.floor(middle);
     }
-    return  Math.floor((begin));
+    return Math.floor((begin));
 }
 
 const homeBtn = document.getElementById("home_btn");
@@ -435,15 +432,15 @@ homeBtn.addEventListener("click", (e) => {
     const newFrom = new Date(NOW),
         newTo = new Date(NOW);
     const allToDoDays = toDoListDiv.getElementsByClassName("to_do_day");
-    newTo.addDays(RANGE_VALUE/2);
-    changeCurrentRange(newFrom,new Date(newTo));
-    changeMoveableRange(newFrom,newTo);
+    newTo.addDays(RANGE_VALUE / 2);
+    changeCurrentRange(newFrom, new Date(newTo));
+    changeMoveableRange(newFrom, newTo);
     hideAllToDoDays(allToDoDays);
-    for(let date of dateInRange(newFrom,newTo)){
+    for (let date of dateInRange(newFrom, newTo)) {
         document.getElementById(date.formatToDMY()).classList.remove("hidden");
     }
 });
 
-getTasks(moveableFrom.toDateString(), moveableTo.toDateString()).then(() => {
+getTasks(moveableFrom.formatToDMY(), moveableTo.formatToDMY()).then(() => {
     initDateRange(currentFrom, currentTo);
 });

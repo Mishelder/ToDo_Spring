@@ -39,7 +39,7 @@ public class AuthorizationController {
         if(byLoginAndPassword.isEmpty())
             throw new ClientIsNotExistException("Client with password = "
                     + client.getPassword() + " hasn't found");
-        httpSession.setAttribute("client",client);
+        httpSession.setAttribute("client",byLoginAndPassword.get());
         return byLoginAndPassword.get();
     }
 
@@ -54,8 +54,9 @@ public class AuthorizationController {
         if(byEmail.isPresent())
             throw new ClientEmailHasAlreadyExistException("Client with email = "
                     + client.getEmail() + " has already exist");
-        httpSession.setAttribute("client",client);
-        return clientService.save(client);
+        var saveClient = clientService.save(client);
+        httpSession.setAttribute("client",saveClient);
+        return saveClient;
     }
 
     @GetMapping("/logout")

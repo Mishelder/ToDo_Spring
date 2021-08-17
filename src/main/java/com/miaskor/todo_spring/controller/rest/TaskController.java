@@ -15,7 +15,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @Autowired
-    public TaskController (TaskService taskService){
+    public TaskController(TaskService taskService) {
         this.taskService = taskService;
     }
 
@@ -46,4 +46,5 @@ public class TaskController {
     public Task addTask(@RequestBody Task task){
         return taskService.save(task);
     }
+
 }
